@@ -29,7 +29,7 @@ public class AccountController {
 
     @Inject
     private RegistryService userService;
-
+    
     @GET
     public Response listAllUsers() {
         List<User> users = userService.listAllUsers();
