@@ -17,6 +17,7 @@ import java.util.List;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.core.Response;
+
 /**
  *
  * @author Gracias
@@ -30,15 +31,13 @@ public class AccountController {
     private RegistryService userService;
 
     @GET
-//    @RolesAllowed({"ADMIN", "USER"})
     public Response listAllUsers() {
-        List<User> users =  userService.listAllUsers();
-        return Response.ok(users).build(); 
+        List<User> users = userService.listAllUsers();
+        return Response.ok(users).build();
     }
 
     @GET
     @Path("/{id}")
-//    @RolesAllowed({"ADMIN", "USER"})
     public Response getUserById(@PathParam("id") Long id) {
         User user = userService.getUserById(id);
         if (user == null) {
@@ -48,7 +47,6 @@ public class AccountController {
     }
 
     @POST
-//    @RolesAllowed("ADMIN")
     public Response createUser(User user) {
         User createdUser = userService.createUser(user);
         return Response.status(Response.Status.CREATED).entity(createdUser).build();
@@ -56,7 +54,6 @@ public class AccountController {
 
     @PUT
     @Path("/{id}")
-//    @RolesAllowed("ADMIN")
     public Response updateUser(@PathParam("id") Long id, User user) {
         user.setId(id);
         User updatedUser = userService.updateUser(user);
