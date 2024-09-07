@@ -5,9 +5,12 @@
 package com.emma.temp.repository;
 
 import com.emma.temp.entities.User;
+import jakarta.annotation.PostConstruct;
 import jakarta.ejb.Stateless;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.PersistenceUnit;
 import jakarta.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
@@ -19,8 +22,10 @@ import java.util.Optional;
 @Stateless
 public class DataRepository {
 
+  
     @PersistenceContext(unitName = "registry_unit")
     EntityManager em;
+    
 
     public List<User> getAllUsers() {
         return em.createQuery("SELECT u FROM User u ORDER BY u.id", User.class).getResultList();
