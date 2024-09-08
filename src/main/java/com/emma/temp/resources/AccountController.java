@@ -5,34 +5,33 @@
 package com.emma.temp.resources;
 
 import com.emma.temp.entities.User;
-import com.emma.temp.service.RegistryService;
+import com.emma.temp.model.request.AccountRequest;
+import com.emma.temp.model.response.AccountResponse;
+import com.emma.temp.service.AccountService;
 import jakarta.inject.Inject;
-import jakarta.ws.rs.Consumes;
-import jakarta.ws.rs.POST;
-import jakarta.ws.rs.PUT;
-import jakarta.ws.rs.PathParam;
-import jakarta.ws.rs.Produces;
+import jakarta.validation.Valid;
+import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
-import java.util.List;
-import jakarta.ws.rs.GET;
-import jakarta.ws.rs.Path;
 import jakarta.ws.rs.core.Response;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 /**
- *
  * @author Gracias
  */
-@Path("users")
+
+@Path("accounts")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class AccountController {
 
     @Inject
-    private RegistryService userService;
-    
+    private AccountService userService;
+
     @GET
     public Response listAllUsers() {
-        List<User> users = userService.listAllUsers();
+        List<AccountResponse> users = userService.listAllUsers().stream().map(AccountResponse::new).collect(Collectors.toList());
         return Response.ok(users).build();
     }
 
@@ -43,20 +42,39 @@ public class AccountController {
         if (user == null) {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
-        return Response.ok(user).build();
+        return Response.ok(new AccountResponse(user)).build();
+    }
+
+    @GET
+    @Path("/email/{email}")
+    public Response getUserByEmail(@PathParam("email") String email) {
+        User user = userService.getUserByUsername(email);
+        if (user == null) {
+            return Response.status(Response.Status.NOT_FOUND).entity("Account not found.").build();
+        }
+        return Response.ok(new AccountResponse(user)).build();
     }
 
     @POST
-    public Response createUser(User user) {
-        User createdUser = userService.createUser(user);
-        return Response.status(Response.Status.CREATED).entity(createdUser).build();
+    public Response createUser(@Valid AccountRequest accountRequest) {
+        if (accountRequest == null) {
+            return Response.status(Response.Status.BAD_REQUEST).build();
+        }
+        User account = userService.createUser(accountRequest);
+        return Response.status(Response.Status.CREATED).entity(new AccountResponse(account)).build();
     }
 
     @PUT
     @Path("/{id}")
-    public Response updateUser(@PathParam("id") Long id, User user) {
-        user.setId(id);
-        User updatedUser = userService.updateUser(user);
-        return Response.ok(updatedUser).build();
+    public Response updateUser(@PathParam("id") Long id, AccountRequest accountRequest) {
+        User account = userService.updateUser(id, accountRequest);
+        return Response.ok(new AccountResponse(account)).build();
+    }
+
+    @PUT
+    @Path("/email/{email}")
+    public Response updateUserByUsername(@PathParam("email") String email, AccountRequest accountRequest) {
+        User account = userService.updateUserByUsername(email, accountRequest);
+        return Response.ok(new AccountResponse(account)).build();
     }
 }
