@@ -22,10 +22,8 @@ import java.util.Optional;
 @Stateless
 public class DataRepository {
 
-  
     @PersistenceContext(unitName = "registry_unit")
     EntityManager em;
-    
 
     public List<User> getAllUsers() {
         return em.createQuery("SELECT u FROM User u ORDER BY u.id", User.class).getResultList();
@@ -37,20 +35,35 @@ public class DataRepository {
                 .getResultList()
                 .stream()
                 .findFirst();
+
     }
 
     public User findById(Long id) {
-        return em.find(User.class, id);
+        try {
+            return em.find(User.class, id);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     @Transactional
     public User saveOrUpdateUser(User user) {
-        if (user.getId() == null) {
-            em.persist(user);
-            em.flush();
-            return user;
-        } else {
-            return em.merge(user);
+        try {
+            if (user.getId() == null) {
+                em.persist(user);
+                em.flush();
+                return user;
+            } else {
+                return em.merge(user);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
         }
+    }
+
+    public void removeUser(User user) {
+        em.remove(user);
     }
 }

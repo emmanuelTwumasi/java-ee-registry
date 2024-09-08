@@ -5,7 +5,8 @@
 package com.emma.temp.repository;
 
 import com.emma.temp.entities.User;
-import com.emma.temp.service.RegistryService;
+import com.emma.temp.model.request.AccountRequest;
+import com.emma.temp.service.AccountService;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.context.Initialized;
 import jakarta.enterprise.event.Observes;
@@ -18,26 +19,17 @@ import java.time.LocalDate;
  */
 @ApplicationScoped
 public class DataInitializer {
- 
-     @Inject
-    private RegistryService dataService;
-    
+
+    @Inject
+    private AccountService dataService;
+
     public void execute(@Observes @Initialized(ApplicationScoped.class) Object event) {
- 
+
         if (dataService.listAllUsers().isEmpty()) {
-            User sally = dataService.createUser(new User("Manu Michael", "Manu", "anything", "something", LocalDate.now()));
-            User jhn = dataService.createUser(new User("John", "Yaw", "gohome", "kivo", LocalDate.now()));
- 
-//            dataService.createQuality("Wonderful", sally);
-//            dataService.createQuality("Team Player", sally);
-//            dataService.createQuality("Good Judgement", sally);
-//            dataService.createQuality("Good Leader", sally);
-// 
-//            dataService.createQuality("Responsible", tom);
-//            dataService.createQuality("Deligent", tom);
-//            dataService.createQuality("Care fpor his teammates.", tom);
- 
+            dataService.createUser(new AccountRequest("Manu Michael", "Manu", "anything@mail.com", "something", LocalDate.now()));
+            dataService.createUser(new AccountRequest("John", "Yaw", "gohome@mail.com", "kivo", LocalDate.now()));
         }
     }
- 
+
+
 }
